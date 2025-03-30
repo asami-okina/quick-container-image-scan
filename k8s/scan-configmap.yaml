@@ -1,0 +1,86 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: scan-job-template
+  namespace: default
+data:
+  body: |
+    {
+      "apiVersion": "batch/v1",
+      "kind": "Job",
+      "metadata": {
+        "labels": {
+          "app.kubernetes.io/component": "scan",
+          "app.kubernetes.io/instance": "{{ .instance }}",
+          "app.kubernetes.io/name": "scan",
+          "app.kubernetes.io/part-of": "scan",
+          "app.kubernetes.io/version": "1.0"
+        },
+        "name": "{{ .jobName }}",
+        "namespace": "{{ .namespace }}"
+      },
+      "spec": {
+        "backoffLimit": 0,
+        "completionMode": "NonIndexed",
+        "completions": 1,
+        "manualSelector": false,
+        "parallelism": 1,
+        "podReplacementPolicy": "TerminatingOrFailed",
+        "suspend": false,
+        "template": {
+          "metadata": {
+            "labels": {
+              "app.kubernetes.io/component": "scan",
+              "app.kubernetes.io/instance": "{{ .instance }}",
+              "app.kubernetes.io/name": "scan",
+              "app.kubernetes.io/part-of": "scan",
+              "app.kubernetes.io/version": "1.0"
+            }
+          },
+          "spec": {
+            "containers": [
+              {
+                "args": ["{{ .id }}", "{{ .artifactName }}"],
+                "env": [
+                  {
+                    "name": "DB_PASSWORD",
+                    "valueFrom": {
+                      "secretKeyRef": {
+                        "key": "postgres-password",
+                        "name": "my-release-postgresql"
+                      }
+                    }
+                  },
+                  {
+                    "name": "DB_HOST",
+                    "value": "postgresql-service"
+                  },
+                  {
+                    "name": "DB_PORT",
+                    "value": "5432"
+                  }
+                ],
+                "image": "kind-registry:5000/scan:latest",
+                "imagePullPolicy": "Always",
+                "name": "scan",
+                "resources": {
+                  "requests": {
+                    "cpu": "3",
+                    "memory": "3Gi"
+                  },
+                  "limits": {
+                    "cpu": "3",
+                    "memory": "3Gi"
+                  }
+                }
+              }
+            ],
+            "dnsPolicy": "ClusterFirst",
+            "restartPolicy": "Never",
+            "securityContext": {},
+            "terminationGracePeriodSeconds": 900
+          }
+        },
+        "ttlSecondsAfterFinished": 172800
+      }
+    }

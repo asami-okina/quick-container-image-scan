@@ -1,0 +1,40 @@
+{
+  "name": "@container-scan/scan-job",
+  "version": "0.0.0",
+  "private": true,
+  "description": "",
+  "license": "UNLICENSED",
+  "exports": {
+    ".": {
+      "import": "./js/index.js",
+      "types": "./js/index.d.ts",
+      "default": "./js/index.js"
+    }
+  },
+  "imports": {
+    "#prisma/*": "./js/prisma/*.js",
+    "#prisma/prisma-client": "./js/prisma/prisma-client.js"
+  },
+  "scripts": {
+    "build": "tsc --project tsconfig.json",
+    "dev": "tsc --watch",
+    "start": "node --enable-source-maps ./js/jobs/scan/ts/main.js",
+    "typecheck": "tsc --noEmit",
+    "lint": "DEBUG=eslint:cli-engine eslint . --max-warnings 0"
+  },
+  "files": [
+    "**/*.{js,ts}"
+  ],
+  "dependencies": {
+    "pretty-bytes": "6.1.1",
+    "progress-stream": "2.0.0",
+    "uuid": "9.0.1",
+    "@t3-oss/env-core": "0.12.0",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@types/progress-stream": "2.0.5",
+    "@types/uuid": "9.0.8",
+    "typescript": "^5.3.3"
+  }
+}

@@ -1,0 +1,71 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum ScanStatus {
+  PENDING
+  SCANNING
+  COMPLETED
+  FAILED
+}
+
+model Scan {
+  id           String       @id @default(cuid())
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  artifactName String
+  status       ScanStatus   @default(PENDING)
+  errorMessage String?
+  logs         ScanLog[]
+  results      ScanResult[]
+}
+
+model ScanLog {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  message   String
+  scan      Scan     @relation(fields: [scanId], references: [id], onDelete: Cascade)
+  scanId    String
+}
+
+model ScanResult {
+  id              String          @id @default(cuid())
+  createdAt       DateTime        @default(now())
+  target          String
+  class           String
+  type            String?
+  scan            Scan            @relation(fields: [scanId], references: [id], onDelete: Cascade)
+  scanId          String
+  vulnerabilities Vulnerability[]
+  licenses        License[]
+}
+
+model Vulnerability {
+  id               String     @id @default(cuid())
+  vulnerabilityId  String
+  pkgName          String
+  installedVersion String
+  fixedVersion     String?
+  status           String
+  primaryUrl       String?
+  title            String?
+  severity         String
+  references       String[]
+  scanResult       ScanResult @relation(fields: [scanResultId], references: [id], onDelete: Cascade)
+  scanResultId     String
+}
+
+model License {
+  id           String     @id @default(cuid())
+  severity     String
+  category     String
+  pkgName      String
+  name         String
+  scanResult   ScanResult @relation(fields: [scanResultId], references: [id], onDelete: Cascade)
+  scanResultId String
+}

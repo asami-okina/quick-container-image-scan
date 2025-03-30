@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "esModuleInterop": true,
+    "strict": true,
+    "skipLibCheck": true,
+    "rootDir": "../..",
+    "outDir": "js",
+    "paths": {
+      "@/*": ["../../*"],
+      "@/prisma/prisma-client": ["../../prisma/prisma-client"]
+    },
+    "sourceMap": true,
+    "declaration": true,
+    "declarationMap": true,
+    "baseUrl": "../..",
+    "allowJs": true
+  },
+  "ts-node": {
+    "esm": true
+  },
+  "include": ["ts/**/*", "../../prisma/**/*"],
+  "exclude": ["node_modules", "js"]
+}
